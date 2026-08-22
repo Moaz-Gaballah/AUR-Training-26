@@ -110,7 +110,12 @@ def save_prog(stock:dict, path):
 
 if __name__ == "__main__":
 
-    stock = open_file(PATH)
+    try:
+        stock = open_file(PATH)
+    except Exception as e:
+        print(e)
+        print("Starting with an empty stock.")
+        stock = {}
    
     while True:
         inp = menu_display()
