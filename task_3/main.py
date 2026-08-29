@@ -20,6 +20,28 @@ class LibraryItem(ABC):
     def item_status(self):
         return self.__status
 
+    @staticmethod
+    def isbn_check(string:str) -> bool:
+        """
+        Function to check the validation of ISBN-13 only
+        """
+        digits = string.strip().replace("-", "")
+
+        if len(digits) != 13 or not digits.isdigit():
+            return False
+        
+        total_sum = 0
+        start = 1
+        for char in digits:
+            digit = int(char)
+            if(start):
+                total_sum += digit * 1
+                start = 0
+            else:
+                total_sum += digit * 3
+                start = 1
+        return True if total_sum % 10 == 0 else False
+
     
     def checkout(self):
         if(self.__status == ItemStatus.AVAILABLE):
@@ -47,6 +69,7 @@ class LibraryItem(ABC):
     
     def __repr__(self):
         return f"{self.item_type()} (title = {self.title},  {self.item_status})"
+
         
 
 class Book(LibraryItem):
@@ -74,13 +97,7 @@ class Magazine(LibraryItem):
     def item_type(self):
         return "Magazine"
 
-
-
-
-print((Book("Dune")))
-print((DVD("inception")))
-print((Magazine("nudes")))
-
-print(repr(Book("Dune")))
-print(repr(DVD("inception")))
-print(repr(Magazine("nudes")))
+print(LibraryItem.isbn_check("9780441013593"))   
+print(LibraryItem.isbn_check("9780441013590"))   
+print(LibraryItem.isbn_check("hello")) 
+print(LibraryItem.isbn_check("123"))        
