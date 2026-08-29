@@ -1,0 +1,2 @@
+type=Book|title=Dune|status=AVAILABLE
+type=DVD|title=moaz|status=AVAILABLE

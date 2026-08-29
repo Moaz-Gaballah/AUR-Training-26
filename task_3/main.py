@@ -1,6 +1,8 @@
 from enum import Enum,auto
 from abc import ABC, abstractmethod
 
+PATH = r"C:\Users\PCCV\OneDrive\Desktop\AUR-Training-26\task_3\database.txt"
+
 class ItemStatus(Enum):
     AVAILABLE = auto()
     CHECKED_OUT = auto()
@@ -118,21 +120,41 @@ class Magazine(LibraryItem):
     def item_type(self):
         return "Magazine"
 
-d_dvd = {"type": "DVD", "title": "Inception", "director": "Christopher Nolan", "status": "CHECKED_OUT"}
-d_magazine = {"type": "Magazine", "title": "National Geographic", "issue": "2026-08", "status": "AVAILABLE"}
-d_book = {"type": "Book", "title": "1984", "author": "George Orwell", "isbn": "9780451524935", "status": "CHECKED_OUT"}
+class Database:
 
-book = LibraryItem.from_dict(d_book)
-print(book)
-print(repr(book))
-print(book.author, book.isbn)
+    def loading_data(self, path) -> list[dict]:
+        all_data = []
 
-mag = LibraryItem.from_dict(d_magazine)
-print(mag)
-print(repr(mag))
-print(mag.issue)
+        with open(path, 'r') as file:
+            lines = file.readlines()
+            for line in lines:
+                data = {}
+                new_line = line.rstrip().split("|")
+                for sec in new_line:
+                    new_sec = sec.split("=")
+                    data[new_sec[0]] = new_sec[1]
+                all_data.append(data)
 
-dvd = LibraryItem.from_dict(d_dvd)
-print(dvd)
-print(repr(dvd))
-print(dvd.director)
+        return all_data
+
+    def saving_data(self, path:str, items:list[LibraryItem]):
+        with open(path, 'w') as file:
+            for item in items:
+                line = ""
+                line += f"type={item.item_type()}"
+                attr = item.__dict__
+                for key, value in attr.items():
+                    if key == "_LibraryItem__status":
+                        line += f"|status={item.item_status.name}"
+                    elif value is None:
+                        continue
+                    else:
+                        line += f"|{key}={value}"
+                file.write(f"{line}\n")
+
+            
+
+
+db = Database()
+db.saving_data(PATH, [Book("Dune"), DVD("moaz")])
+print(db.loading_data(PATH))
