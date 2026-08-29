@@ -8,9 +8,15 @@ class ItemStatus(Enum):
 
 class LibraryItem(ABC):
 
-    def __init__(self, title):
+    _classes = {}
+
+    def __init__(self, title, status = ItemStatus.AVAILABLE):
         self.title = title
-        self.__status = ItemStatus.AVAILABLE
+        self.__status = status
+
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+        cls._classes[cls.__name__] = cls
 
     @abstractmethod
     def item_type(self):
@@ -41,6 +47,17 @@ class LibraryItem(ABC):
                 total_sum += digit * 3
                 start = 1
         return True if total_sum % 10 == 0 else False
+
+
+    @classmethod
+    def from_dict(cls, parsed_dict: dict):
+        item_class = cls._classes[parsed_dict["type"]]
+        new_dict = parsed_dict.copy()
+
+        new_dict.pop("type")
+        new_dict["status"] = ItemStatus[new_dict["status"].upper()]
+
+        return item_class(**new_dict)
 
     
     def checkout(self):
@@ -74,8 +91,10 @@ class LibraryItem(ABC):
 
 class Book(LibraryItem):
     loan_period = 21
-    def __init__(self, title):
-        super().__init__(title)
+    def __init__(self, title, status=ItemStatus.AVAILABLE, author=None, isbn=None, **kwargs):
+        super().__init__(title, status)
+        self.author = author
+        self.isbn = isbn
 
     def item_type(self):
         return "Book"
@@ -83,21 +102,37 @@ class Book(LibraryItem):
 
 class DVD(LibraryItem):
     loan_period = 5
-    def __init__(self, title):
-        super().__init__(title)
+    def __init__(self, title, status=ItemStatus.AVAILABLE, director=None,  **kwargs):
+        super().__init__(title, status)
+        self.director = director
 
     def item_type(self):
         return "DVD"
     
 class Magazine(LibraryItem):
     loan_period = 14
-    def __init__(self, title):
-        super().__init__(title)
+    def __init__(self, title, status=ItemStatus.AVAILABLE, issue=None,  **kwargs):
+        super().__init__(title, status)
+        self.issue = issue
 
     def item_type(self):
         return "Magazine"
 
-print(LibraryItem.isbn_check("9780441013593"))   
-print(LibraryItem.isbn_check("9780441013590"))   
-print(LibraryItem.isbn_check("hello")) 
-print(LibraryItem.isbn_check("123"))        
+d_dvd = {"type": "DVD", "title": "Inception", "director": "Christopher Nolan", "status": "CHECKED_OUT"}
+d_magazine = {"type": "Magazine", "title": "National Geographic", "issue": "2026-08", "status": "AVAILABLE"}
+d_book = {"type": "Book", "title": "1984", "author": "George Orwell", "isbn": "9780451524935", "status": "CHECKED_OUT"}
+
+book = LibraryItem.from_dict(d_book)
+print(book)
+print(repr(book))
+print(book.author, book.isbn)
+
+mag = LibraryItem.from_dict(d_magazine)
+print(mag)
+print(repr(mag))
+print(mag.issue)
+
+dvd = LibraryItem.from_dict(d_dvd)
+print(dvd)
+print(repr(dvd))
+print(dvd.director)
