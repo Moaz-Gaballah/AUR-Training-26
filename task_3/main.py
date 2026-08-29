@@ -38,6 +38,15 @@ class LibraryItem(ABC):
             raise ValueError(f"Can't mark_lost {self.title} as it's {self.__status}")
         else:
             self.__status = ItemStatus.LOST
+
+    def __lt__(self, other):
+        return self.title < other.title
+    
+    def __str__(self):
+        return f"{self.title} ({self.item_type()}) - {self.item_status.name.capitalize()}"
+    
+    def __repr__(self):
+        return f"{self.item_type()} (title = {self.title},  {self.item_status})"
         
 
 class Book(LibraryItem):
@@ -64,3 +73,14 @@ class Magazine(LibraryItem):
 
     def item_type(self):
         return "Magazine"
+
+
+
+
+print((Book("Dune")))
+print((DVD("inception")))
+print((Magazine("nudes")))
+
+print(repr(Book("Dune")))
+print(repr(DVD("inception")))
+print(repr(Magazine("nudes")))
