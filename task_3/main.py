@@ -1,7 +1,6 @@
 from enum import Enum,auto
 from abc import ABC, abstractmethod
 
-PATH = r"C:\Users\PCCV\OneDrive\Desktop\AUR-Training-26\task_3\database.txt"
 
 class ItemStatus(Enum):
     AVAILABLE = auto()
@@ -154,7 +153,39 @@ class Database:
 
             
 
+class Library():
+    def __init__(self, database:Database):
+        self._items = {}
+        self._database = database
 
-db = Database()
-db.saving_data(PATH, [Book("Dune"), DVD("moaz")])
-print(db.loading_data(PATH))
+    def add_item(self, item:LibraryItem):
+        self._items[item.title] = item
+
+    def checkout(self, title:str):
+        self._items[title].checkout()
+
+    def return_item(self, title):
+        self._items[title].return_item()
+
+    def find_by_title(self, title):
+        if title in self._items:
+            return self._items[title]
+        else:
+            raise ValueError(f"No such item of title {title}")
+    def list_available(self) -> list[LibraryItem]:
+        items = []
+        for item in self._items.values():
+            if item.item_status == ItemStatus.AVAILABLE:
+                items.append(item)
+        return items
+
+    def load(self, path):
+        data = self._database.loading_data(path)
+        for item_dict in data:
+            item = LibraryItem.from_dict(item_dict)
+            self.add_item(item)
+
+    def save(self, path):
+        items = list(self._items.values())
+        self._database.saving_data(path, items)
+
