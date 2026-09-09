@@ -1,4 +1,5 @@
 from setuptools import find_packages, setup
+from glob import glob
 
 package_name = 'python_pack'
 
@@ -10,6 +11,7 @@ setup(
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
+        ('share/' + package_name + '/config', glob('config/*.yaml')),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
@@ -24,8 +26,7 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            "node1 = python_pack.node1:main",
-            "go_to_goal_node = python_pack.GoToGoalNode:main",
+            "go_to_goal_node = python_pack.go_to_goal_node:main",
         ],
     },
 )
