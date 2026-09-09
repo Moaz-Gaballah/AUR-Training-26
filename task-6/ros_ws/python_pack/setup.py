@@ -25,7 +25,7 @@ setup(
     entry_points={
         'console_scripts': [
             "node1 = python_pack.node1:main",
-            "GoToGoalNode = python_pack.GoToGoalNode:main",
+            "go_to_goal_node = python_pack.GoToGoalNode:main",
         ],
     },
 )
