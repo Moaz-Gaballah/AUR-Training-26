@@ -2,6 +2,7 @@ import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import Twist
 from turtlesim.msg import Pose
+from std_srvs.srv import SetBool
 import math
 
 # TARGET_X = 10
@@ -39,10 +40,25 @@ class GoToGoalNode(Node):
 
         self.current_pose = None
         self.goal_reached = False
+        self.moving = False
 
         self.publisher = self.create_publisher(Twist,'/turtle1/cmd_vel',10)
         self.subscription = self.create_subscription( Pose, '/turtle1/pose', self.pose_callback, 10)
         self.create_timer(1.0 / loop_rate_hz, self.control_loop)
+
+        self.toggle_srv = self.create_service(SetBool, 'toggle_movement', self.toggle_movement_callback)
+
+
+     def toggle_movement_callback(self, request, response):
+        self.moving = bool(request.data)
+        if self.moving:
+          self.goal_reached = False
+        else:
+          self.publisher.publish(Twist())
+ 
+        response.success = True
+        response.message = 'Movement started' if self.moving else 'Movement stopped'
+        return response
 
      def pose_callback(self, msg):
           self.current_pose = msg
@@ -57,7 +73,7 @@ class GoToGoalNode(Node):
      
  
      def control_loop(self):
-        if self.current_pose is None or self.goal_reached:
+        if not self.moving or self.current_pose is None or self.goal_reached:
           return
 
         dx = self.target_x - self.current_pose.x
@@ -70,6 +86,7 @@ class GoToGoalNode(Node):
         if distance_error < self.distance_tolerance:
           self.publisher.publish(Twist())  
           self.goal_reached = True
+          self.moving = False
           self.get_logger().info('Goal reached')
           return
 

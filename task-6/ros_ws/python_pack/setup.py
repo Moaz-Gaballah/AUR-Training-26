@@ -27,6 +27,7 @@ setup(
     entry_points={
         'console_scripts': [
             "go_to_goal_node = python_pack.go_to_goal_node:main",
+            "client = python_pack.client:main",
         ],
     },
 )
