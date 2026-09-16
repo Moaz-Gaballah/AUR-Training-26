@@ -77,9 +77,9 @@ class object_detection():
                     cx, cy = det['centroid']
                     label = det['label']
 
-                    draw_color = (0, 0, 255) if "red" in label else (255, 0, 0)
+                    draw_color = (255, 255, 255)
 
-                    cv.drawContours(frame, [contour], -1, draw_color, 2)
+                    cv.drawContours(frame, [contour], -1, draw_color, 1)
 
                     cv.putText(frame, label, (cx - 40, cy - 10),
                               cv.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
