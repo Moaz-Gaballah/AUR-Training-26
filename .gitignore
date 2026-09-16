@@ -1,3 +1,5 @@
+.mp4
+
 # ── Pixi ──────────────────────────────────────────────
 .pixi/
 # pixi.lock — recommended to COMMIT this for reproducibility, don't ignore it
